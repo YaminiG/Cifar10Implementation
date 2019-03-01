@@ -600,4 +600,76 @@ def plotMEFullyConnected(ME1, ME2, ME3):
 
 plotMEConvolution(MEConv1Sorted, MEConv2Sorted)
 plotMEFullyConnected(MEFullyConnected1Sorted, MEFullyConnected2Sorted, MEFullyConnected3Sorted)
+
+
+### copy the output to a file####
+##np.savetxt('mefc1', MEFullyConnected1Graphs[0], delimiter=',')
+
+
+##### dynamic diff ######
+
+
+calculateDynamicDiff(wConv, wFc, wOrigConv, wOrigFc)
+session.run(tf.global_variables_initializer())
+assignFilters(wConv,wFc)
+assign_op = weightsFcMat[0].assign(wDiffFc[0])
+session.run(assign_op)
+assign_op = weightsConvMat[0].assign(wDiffConv[0])
+session.run(assign_op)
+
+###### LAYER 1 ######
+valuesConvMat, valuesFcMat, numImg = loadValues(100)
+MEConv1,MEConv1Sorted = calculateConvME(valuesConvMat[0])
+MEFullyConnected1, MEFullyConnected1Sorted = calculateFCME(valuesFcMat[0])
+#MEConv1 = calculateConvMEDynamic(valuesConvMat[0])
+#MEFullyConnected1 = calculateFCMEDynamic(valuesFcMat[0])
+
+assignFilters(wConv,wFc)
+assign_op = weightsFcMat[1].assign(wDiffFc[1])
+session.run(assign_op)
+assign_op = weightsConvMat[1].assign(wDiffConv[1])
+session.run(assign_op)
+
+###### LAYER 2 ######
+valuesConvMat,valuesFcMat,numImg = loadValues(100)
+MEConv2,MEConv2Sorted = calculateConvME(valuesConvMat[1])
+MEFullyConnected2, MEFullyConnected2Sorted = calculateFCME(valuesFcMat[1])
+#MEConv2 = calculateConvMEDynamic(valuesConvMat[1])
+#MEFullyConnected2 = calculateFCMEDynamic(valuesFcMat[1])
+
+
+assign_op = weightsFcMat[2].assign(wDiffFc[2])
+session.run(assign_op)
+valuesConvMat,valuesFcMat,numImg = loadValues(100)
+#MEConv1 = calculateConvMEDynamic(valuesConvMat[0])
+#MEFullyConnected3 = calculateFCMEDynamic(valuesFcMat[2])
+MEFullyConnected3, MEFullyConnected3Sorted = calculateFCME(valuesFcMat[2])
+
+######### loadvalues ends here #########
+
+
+
+MEFullyConnected1Graphs.append(MEFullyConnected1Sorted)
+MEFullyConnected2Graphs.append(MEFullyConnected2Sorted)
+MEFullyConnected3Graphs.append(MEFullyConnected3Sorted)
+MEConv1Graphs.append(MEConv1Sorted)
+MEConv2Graphs.append(MEConv2Sorted)
+
+##np.savetxt('mefc2', MEFullyConnected1Graphs[1], delimiter=',')
+def write(data, outfile):
+        f = open(outfile, "w+b")
+        pickle.dump(data, f)
+        f.close()
+
+
+import pickle
+write(MEFullyConnected1Graphs[0], "mefc1")
+write(MEFullyConnected1Graphs[1], "mefc2")
+
+
+
+def returnthis(MEFullyConnected1Graphs):
+    return MEFullyConnected1Graphs
+
+    
 print("this also works for us")
